@@ -1,0 +1,41 @@
+version: '3.8'
+services:
+  mysqldb:
+    image: mysql:5.7
+    restart: unless-stopped
+    environment:
+       MYSQL_ROOT_PASSWORD : 123456
+       MYSQL_DATABASE : rc
+    ports:
+      - "3307:3306" 
+    volumes:
+      - db:/var/lib/mysql
+    networks:
+      - backend
+  
+  app-api:
+    build: ./be
+    restart: unless-stopped
+    ports:
+     - "8080:8080" 
+    environment:
+       DB_HOST : mysqldb
+       DB_USER : root
+       DB_PASSWORD : 123456
+       DB_NAME : rc
+       DB_PORT : 8080
+    networks:
+      - backend
+      - frontend
+  app-ui:
+    build:
+      context: ./fe
+    ports:
+       - "3000:3000"
+    networks:
+      - frontend  
+volumes: 
+  db:
+networks:
+  backend:
+  frontend:
